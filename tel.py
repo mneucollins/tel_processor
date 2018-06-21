@@ -7,8 +7,6 @@ class Tel:
      1. operates on the stack,
      2. pushes the result of the operation back on the stack, and
      3. returns the stack
-
-    they then appends the results of perform an operation on the stack and return a single value
     """
 
     def __init__(self, stack):
@@ -363,15 +361,70 @@ class Tel:
 
 
     # Date Functions
-    #  FTODAY
-    #  FTIME
-    #  FELAPSED
-    #  FDATEADD
-    #  FDATEDIFF
-    #  FDOW
-    #  FDATEFORMAT
+    def f_today(self):
+        """
+        :param: none
+        Pushes todays date in the format YYYY-MM-DD onto the stack
+        :return:  stack (list) with last element being todays date
+        :example: [FTODAY]
+        """
+        from datetime import date
+        today = str(date.today())
+        self.stack.append(today)
+        return self.stack
 
-    # Patient Functions
+    def f_time(self):
+        """
+        No Parameters
+        Pushes todays datetime in the format YYYY-MM-DD HH:MM:SS onto the stack
+        :return:  stack (list) with last element being current datetime (no microsecond)
+        :example: [FTIME]
+        """
+        from datetime import datetime
+        time = datetime.now().replace(microsecond=0).isoformat(' ')
+        self.stack.append(time)
+        return self.stack
+
+    def f_timestamp(self):
+        """
+        :param: none
+        Pushes current platform-dependent timestamp onto the stack
+        :return:  stack (list) with last element being current system timestamp
+        :example: [FTIME]
+        """
+        from datetime import datetime
+        ts = ts = datetime.now().timestamp()
+        self.stack.append(ts)
+        return self.stack
+
+    #  FELAPSED
+    #  holding off on FELAPSED for now
+
+    #  FDATEADD
+    def f_dateadd(self):
+        """
+        Returns the date that is <number of days> from <date>. Negative days value subtracts
+        :param: stack: stack[-2]=number of days, stack[-1]=date
+        :return:  result placed back on the stack
+        :example: [C10|C2018-10-11|FDATEADD]
+        """
+        from datetime import datetime
+
+    """
+    # :example: [CInt | CDate | FDATEADD]
+    
+    
+
+    #  FDATEDIFF
+    # :example: [CDate1 | CDate2 | FDATEDIFF]
+
+    #  FDOW
+    # :example: [CDate | FDOW]
+
+    #  FDATEFORMAT
+    # :example: [C<date>|C <format>|FDATEFORMAT]
+
+    # Patient Functions -- require a current session/patient
     #  FPATSET
     #  FPATGET
     #  FPATXSET

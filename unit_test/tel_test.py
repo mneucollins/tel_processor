@@ -192,6 +192,26 @@ class TelTest(unittest.TestCase):
         self.assertEqual(Tel(['Base String', 'Find Str', 'Replace Str']).f_replace().pop(), "Base String")
         self.assertEqual(Tel(['Base String', 'Base', 'Replaced']).f_replace().pop(), "Replaced String")
 
+    def test_f_today(self):
+        import datetime
+        today = datetime.datetime.today().strftime('%Y-%m-%d')
+        self.assertEqual(Tel([]).f_today().pop(), today)
+
+    def test_f_time(self):
+        # a somewhat trivial test, actually just makes sure the stack is loaded with current datetime
+        from datetime import datetime
+        time = datetime.now().replace(microsecond=0).isoformat(' ')
+        self.assertEqual(Tel([]).f_time().pop(), time)
+
+    def test_f_timestamp(self):
+        # uses isclose function to avoid errors due to microseconds delay and comparing floats for equality
+        from math import isclose
+        from datetime import datetime
+        ts1 = datetime.now().timestamp()
+        ts2 = Tel([]).f_timestamp().pop()
+        print("to compare:",ts1, ts2)
+        self.assertTrue(isclose(ts1, ts2, rel_tol=1e-03))
+
 
 if __name__ == "__main__":
     unittest.main()
