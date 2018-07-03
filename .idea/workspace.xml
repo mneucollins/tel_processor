@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d954248c-754c-455d-9e9b-f2d6d896c1ca" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tel.py" beforeDir="false" afterPath="$PROJECT_DIR$/tel.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/unit_test/tel_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/unit_test/tel_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/pip-selfcheck.json" beforeDir="false" afterPath="$PROJECT_DIR$/venv/pip-selfcheck.json" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -17,25 +19,28 @@
     <SUITE FILE_PATH="coverage/tel_processor$Unittests_for_tel_test_TestTel.coverage" NAME="Unittests for tel_test.TestTel Coverage Results" MODIFIED="1522779783982" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/unit_test" />
     <SUITE FILE_PATH="coverage/tel_processor$Unittests_for_tel_test_TestTel_test_simple_tel.coverage" NAME="Unittests for tel_test.TestTel.test_simple_tel Coverage Results" MODIFIED="1523367024742" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/unit_test" />
     <SUITE FILE_PATH="coverage/tel_processor$scratch.coverage" NAME="scratch Coverage Results" MODIFIED="1523370112664" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/tel_processor$Unittests_for_tel_test_TelTest.coverage" NAME="Unittests for tel_test.TelTest Coverage Results" MODIFIED="1528899816806" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/unit_test" />
+    <SUITE FILE_PATH="coverage/tel_processor$Unittests_for_tel_test_TelTest.coverage" NAME="Unittests for tel_test.TelTest Coverage Results" MODIFIED="1530585395930" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/unit_test" />
     <SUITE FILE_PATH="coverage/tel_processor$Unittests_for_tel_test_TelTest_test_p_equal_to.coverage" NAME="Unittests for tel_test.TelTest.test_p_equal_to Coverage Results" MODIFIED="1523369085804" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/unit_test" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="tel.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="tel.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tel.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="121">
-              <caret line="408" column="44" lean-forward="true" selection-start-line="408" selection-start-column="44" selection-end-line="408" selection-end-column="44" />
+            <state relative-caret-position="329">
+              <caret line="442" column="45" lean-forward="true" selection-start-line="442" selection-start-column="45" selection-end-line="442" selection-end-column="45" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="tel_test.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="tel_test.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/unit_test/tel_test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3328">
-              <caret line="211" column="37" selection-start-line="211" selection-start-column="37" selection-end-line="211" selection-end-column="37" />
+            <state relative-caret-position="258">
+              <caret line="28" column="50" lean-forward="true" selection-start-line="28" selection-start-column="50" selection-end-line="28" selection-end-column="50" />
+              <folding>
+                <element signature="e#0#15#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -43,7 +48,7 @@
       <file leaf-file-name="case.py" pinned="false" current-in-tab="false">
         <entry file="file:///Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/unittest/case.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="9696">
+            <state relative-caret-position="16">
               <caret line="619" selection-start-line="619" selection-end-line="619" />
             </state>
           </provider>
@@ -73,8 +78,8 @@
         <option value="$PROJECT_DIR$/app.py" />
         <option value="$PROJECT_DIR$/processor.py" />
         <option value="$PROJECT_DIR$/scratch.py" />
-        <option value="$PROJECT_DIR$/unit_test/tel_test.py" />
         <option value="$PROJECT_DIR$/tel.py" />
+        <option value="$PROJECT_DIR$/unit_test/tel_test.py" />
       </list>
     </option>
   </component>
@@ -84,7 +89,7 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" fullScreen="true">
+  <component name="ProjectFrameBounds" extendedState="6" fullScreen="true">
     <option name="width" value="1280" />
     <option name="height" value="800" />
   </component>
@@ -118,7 +123,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
@@ -265,63 +270,88 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Unittests_for_tel_test_TelTest - 2018.06.13 at 09h 55m 16s.xml">
+    <history-entry file="Unittests_for_tel_test_TelTest - 2018.07.02 at 22h 10m 13s.xml">
       <configuration name="Unittests for tel_test.TelTest" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_tel_test_TelTest - 2018.06.13 at 09h 56m 32s.xml">
+    <history-entry file="Unittests_for_tel_test_TelTest - 2018.07.02 at 22h 16m 08s.xml">
       <configuration name="Unittests for tel_test.TelTest" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_tel_test_TelTest - 2018.06.13 at 09h 56m 56s.xml">
+    <history-entry file="Unittests_for_tel_test_TelTest - 2018.07.02 at 22h 17m 13s.xml">
       <configuration name="Unittests for tel_test.TelTest" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_tel_test_TelTest - 2018.06.13 at 09h 58m 14s.xml">
+    <history-entry file="Unittests_for_tel_test_TelTest - 2018.07.02 at 22h 18m 54s.xml">
       <configuration name="Unittests for tel_test.TelTest" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_tel_test_TelTest - 2018.06.13 at 09h 58m 50s.xml">
+    <history-entry file="Unittests_for_tel_test_TelTest - 2018.07.02 at 22h 19m 39s.xml">
       <configuration name="Unittests for tel_test.TelTest" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_tel_test_TelTest - 2018.06.13 at 10h 09m 05s.xml">
+    <history-entry file="Unittests_for_tel_test_TelTest - 2018.07.02 at 22h 20m 40s.xml">
       <configuration name="Unittests for tel_test.TelTest" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_tel_test_TelTest - 2018.06.13 at 10h 22m 02s.xml">
+    <history-entry file="Unittests_for_tel_test_TelTest - 2018.07.02 at 22h 21m 42s.xml">
       <configuration name="Unittests for tel_test.TelTest" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_tel_test_TelTest - 2018.06.13 at 10h 22m 21s.xml">
+    <history-entry file="Unittests_for_tel_test_TelTest - 2018.07.02 at 22h 23m 29s.xml">
       <configuration name="Unittests for tel_test.TelTest" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_tel_test_TelTest - 2018.06.13 at 10h 22m 51s.xml">
+    <history-entry file="Unittests_for_tel_test_TelTest - 2018.07.02 at 22h 24m 51s.xml">
       <configuration name="Unittests for tel_test.TelTest" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_tel_test_TelTest - 2018.06.13 at 10h 23m 38s.xml">
+    <history-entry file="Unittests_for_tel_test_TelTest - 2018.07.02 at 22h 36m 36s.xml">
       <configuration name="Unittests for tel_test.TelTest" configurationId="tests" />
     </history-entry>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1280" height="800" extended-state="0" />
+    <frame x="0" y="0" width="1280" height="800" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2714055" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.50041634" side_tool="true" weight="0.35818714" />
-      <window_info anchor="right" id="Database" order="3" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.32936507" />
-      <window_info anchor="bottom" id="Python Console" order="7" visible="true" weight="0.2962963" />
+      <window_info anchor="bottom" id="Python Console" order="7" weight="0.2962963" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4995837" visible="true" weight="0.36640212" />
+      <window_info anchor="bottom" id="Terminal" order="7" weight="0.3148148" />
+      <window_info content_ui="combo" id="Project" order="0" weight="0.27544427" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="right" id="Database" order="3" />
       <window_info anchor="right" id="SciView" order="3" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Terminal" order="7" weight="0.3148148" />
       <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.3968254" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4995837" weight="0.36640212" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.3968254" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="right" id="Coverage" order="3" side_tool="true" weight="0.32972524" />
     </layout>
+    <layout-to-restore>
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.27544427" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="8" weight="0.32936507" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" id="SciView" order="3" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4995837" weight="0.36640212" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="right" id="Database" order="4" />
+      <window_info anchor="bottom" id="Terminal" order="10" weight="0.3148148" />
+      <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.50041634" side_tool="true" weight="0.35818714" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.3968254" />
+      <window_info anchor="right" id="Coverage" order="5" side_tool="true" weight="0.32972524" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="12" visible="true" weight="0.2962963" />
+    </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
@@ -345,7 +375,7 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="24" />
+      <option name="time" value="25" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
@@ -687,22 +717,25 @@
     </entry>
     <entry file="file:///Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/unittest/case.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9696">
+        <state relative-caret-position="16">
           <caret line="619" selection-start-line="619" selection-end-line="619" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/unit_test/tel_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3328">
-          <caret line="211" column="37" selection-start-line="211" selection-start-column="37" selection-end-line="211" selection-end-column="37" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tel.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="121">
-          <caret line="408" column="44" lean-forward="true" selection-start-line="408" selection-start-column="44" selection-end-line="408" selection-end-column="44" />
+        <state relative-caret-position="329">
+          <caret line="442" column="45" lean-forward="true" selection-start-line="442" selection-start-column="45" selection-end-line="442" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/unit_test/tel_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="258">
+          <caret line="28" column="50" lean-forward="true" selection-start-line="28" selection-start-column="50" selection-end-line="28" selection-end-column="50" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

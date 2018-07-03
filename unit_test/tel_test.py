@@ -4,6 +4,7 @@ import processor
 from tel import Tel
 
 
+
 class ProcessorTest(unittest.TestCase):
     def test_is_simple_tel(self):
         """ simple_tel should return true if text is a valid tel string only"""
@@ -209,8 +210,18 @@ class TelTest(unittest.TestCase):
         from datetime import datetime
         ts1 = datetime.now().timestamp()
         ts2 = Tel([]).f_timestamp().pop()
-        print("to compare:",ts1, ts2)
+        # print("to compare:",ts1, ts2)
         self.assertTrue(isclose(ts1, ts2, rel_tol=1e-03))
+
+    def test_f_dateadd(self):
+        self.assertEqual(Tel(['']).f_dateadd().pop(), "err:f_dateadd:too few parameters (need 2)")
+        self.assertEqual(Tel(['2018-07-02']).f_dateadd().pop(), "err:f_dateadd:too few parameters (need 2)")
+        self.assertEqual(Tel([2.3, '2018-07-01']).f_dateadd().pop(),'err:f_date_add: first parameter, "2.3", must be an integer (number of days)')
+        self.assertEqual(Tel(['2', '2018']).f_dateadd().pop(),'err:f_date_add:second parameter, "2018", does not appear to be a valid date in the proper format 0000-00-00')
+        self.assertEqual(Tel(['2', '2018-30-12']).f_dateadd().pop(),'err:f_date_add:second parameter, "2018-30-12", does not appear to be a valid date in the proper format 0000-00-00')
+
+        self.assertEqual(Tel(['2','2018-07-02']).f_dateadd().pop(), "2018-07-04")
+        self.assertEqual(Tel(['-2', '2018-07-02']).f_dateadd().pop(), "2018-06-30")
 
 
 if __name__ == "__main__":

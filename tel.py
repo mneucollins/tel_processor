@@ -400,6 +400,7 @@ class Tel:
     #  FELAPSED
     #  holding off on FELAPSED for now
 
+
     #  FDATEADD
     def f_dateadd(self):
         """
@@ -409,11 +410,34 @@ class Tel:
         :example: [C10|C2018-10-11|FDATEADD]
         """
         from datetime import datetime
+        from datetime import timedelta
 
-    """
-    # :example: [CInt | CDate | FDATEADD]
-    
-    
+        if len(self.stack) < 2:
+            self.stack.append("err:f_dateadd:too few parameters (need 2)")
+            return self.stack
+
+        base_date_str = str(self.stack.pop())
+        try:
+            base_date = datetime.strptime(base_date_str,'%Y-%m-%d')
+        except ValueError:
+            err_str = 'err:f_date_add:second parameter, "{}", does not appear to be a valid date in the proper format 0000-00-00'.format(base_date_str)
+            self.stack.append(err_str)
+            return self.stack
+
+        num_days_str = str(self.stack.pop())
+        try:
+            num_days = int(num_days_str)
+        except ValueError:
+            err_str = 'err:f_date_add: first parameter, "{}", must be an integer (number of days)'.format(num_days_str)
+            self.stack.append(err_str)
+            return self.stack
+
+        new_date = base_date+timedelta(days=num_days)
+        new_date_str =new_date.strftime('%Y-%m-%d')
+        self.stack.append(new_date_str)
+        return self.stack
+
+
 
     #  FDATEDIFF
     # :example: [CDate1 | CDate2 | FDATEDIFF]
