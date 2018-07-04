@@ -4,7 +4,6 @@ import processor
 from tel import Tel
 
 
-
 class ProcessorTest(unittest.TestCase):
     def test_is_simple_tel(self):
         """ simple_tel should return true if text is a valid tel string only"""
@@ -214,14 +213,49 @@ class TelTest(unittest.TestCase):
         self.assertTrue(isclose(ts1, ts2, rel_tol=1e-03))
 
     def test_f_dateadd(self):
-        self.assertEqual(Tel(['']).f_dateadd().pop(), "err:f_dateadd:too few parameters (need 2)")
-        self.assertEqual(Tel(['2018-07-02']).f_dateadd().pop(), "err:f_dateadd:too few parameters (need 2)")
-        self.assertEqual(Tel([2.3, '2018-07-01']).f_dateadd().pop(),'err:f_date_add: first parameter, "2.3", must be an integer (number of days)')
-        self.assertEqual(Tel(['2', '2018']).f_dateadd().pop(),'err:f_date_add:second parameter, "2018", does not appear to be a valid date in the proper format 0000-00-00')
-        self.assertEqual(Tel(['2', '2018-30-12']).f_dateadd().pop(),'err:f_date_add:second parameter, "2018-30-12", does not appear to be a valid date in the proper format 0000-00-00')
+        self.assertEqual(Tel(['']).f_dateadd().pop(), 'err:f_dateadd:too few parameters (need 2)')
+        self.assertEqual(Tel(['2018-07-02']).f_dateadd().pop(), 'err:f_dateadd:too few parameters (need 2)')
+        self.assertEqual(Tel([2.3, '2018-07-01']).f_dateadd().pop(),
+                         'err:f_date_add: first parameter, "2.3", must be an integer (number of days)')
+        self.assertEqual(Tel(['2', '2018']).f_dateadd().pop(),
+                         'err:f_date_add:second parameter, "2018", '
+                         'is not a valid date in the proper format YYYY-MM-DD')
+        self.assertEqual(Tel(['2', '2018-30-12']).f_dateadd().pop(),
+                         'err:f_date_add:second parameter, "2018-30-12", '
+                         'is not a valid date in the proper format YYYY-MM-DD')
 
-        self.assertEqual(Tel(['2','2018-07-02']).f_dateadd().pop(), "2018-07-04")
+        self.assertEqual(Tel(['2', '2018-07-02']).f_dateadd().pop(), "2018-07-04")
         self.assertEqual(Tel(['-2', '2018-07-02']).f_dateadd().pop(), "2018-06-30")
+
+    def test_f_datediff(self):
+        self.assertEqual(Tel(['']).f_datediff().pop(),
+                         "err:f_datediff:too few parameters (need 2)")
+        self.assertEqual(Tel(['2018-07-02']).f_datediff().pop(),
+                         "err:f_datediff:too few parameters (need 2)")
+        self.assertEqual(Tel(['2017-01-01', '2018']).f_datediff().pop(),
+                         'err:f_date_diff: both parameters, "2017-01-01", "2018", '
+                         'must be valid dates in the format YYYY-MM-DD')
+        self.assertEqual(Tel(['2017', '2018-01-01']).f_datediff().pop(),
+                         'err:f_date_diff: both parameters, "2017", "2018-01-01", '
+                         'must be valid dates in the format YYYY-MM-DD')
+        self.assertEqual(Tel(['2016-01-01', '2017-01-01']).f_datediff().pop(), 366)
+        self.assertEqual(Tel(['2017-01-01', '2018-01-01']).f_datediff().pop(), 365)
+        self.assertEqual(Tel(['2018-07-04', '2018-07-03']).f_datediff().pop(), -1)
+
+    def test_f_dow(self):
+        self.assertEqual(Tel([]).f_dow().pop(),
+                         'err:f_dow:too few parameters (need 1)')
+        self.assertEqual(Tel(['2018']).f_dow().pop(),
+                         'err:f_dow: parameter "2018" is not a valid date in format YYYY-MM-DD')
+        self.assertEqual(Tel(['2018-07-03']).f_dow().pop(), 'Tue')
+
+    def test_f_dateformat(self):
+        self.assertEqual(Tel([]).f_dateformat().pop(),
+                         'err:f_dateformat:too few parameters (need 2)')
+        self.assertEqual(Tel(['2018', '%m/%d/%Y']).f_dateformat().pop(),
+                         'err:f_dateformat: parameter "2018" is not a valid date in format YYYY-MM-DD')
+        self.assertEqual(Tel(['2018-07-03', '%m/%d/%Y']).f_dateformat().pop(), '07/03/2018')
+        self.assertEqual(Tel(['2018-07-03', '%a, %b %d, %Y']).f_dateformat().pop(), 'Tue, Jul 03, 2018')
 
 
 if __name__ == "__main__":

@@ -359,12 +359,11 @@ class Tel:
         self.stack.append(new_str)
         return self.stack
 
-
     # Date Functions
     def f_today(self):
         """
         :param: none
-        Pushes todays date in the format YYYY-MM-DD onto the stack
+        Pushes today's date in the format YYYY-MM-DD onto the stack
         :return:  stack (list) with last element being todays date
         :example: [FTODAY]
         """
@@ -376,7 +375,7 @@ class Tel:
     def f_time(self):
         """
         No Parameters
-        Pushes todays datetime in the format YYYY-MM-DD HH:MM:SS onto the stack
+        Pushes today's datetime in the format YYYY-MM-DD HH:MM:SS onto the stack
         :return:  stack (list) with last element being current datetime (no microsecond)
         :example: [FTIME]
         """
@@ -393,21 +392,20 @@ class Tel:
         :example: [FTIME]
         """
         from datetime import datetime
-        ts = ts = datetime.now().timestamp()
+        ts = datetime.now().timestamp()
         self.stack.append(ts)
         return self.stack
 
     #  FELAPSED
     #  holding off on FELAPSED for now
 
-
     #  FDATEADD
     def f_dateadd(self):
         """
         Returns the date that is <number of days> from <date>. Negative days value subtracts
         :param: stack: stack[-2]=number of days, stack[-1]=date
-        :return:  result placed back on the stack
-        :example: [C10|C2018-10-11|FDATEADD]
+        :return:  result or error message placed back on the stack
+        :tel example: [C10|C2018-10-11|FDATEADD]
         """
         from datetime import datetime
         from datetime import timedelta
@@ -418,9 +416,11 @@ class Tel:
 
         base_date_str = str(self.stack.pop())
         try:
-            base_date = datetime.strptime(base_date_str,'%Y-%m-%d')
+            base_date = datetime.strptime(base_date_str, '%Y-%m-%d')
         except ValueError:
-            err_str = 'err:f_date_add:second parameter, "{}", does not appear to be a valid date in the proper format 0000-00-00'.format(base_date_str)
+            err_str = (
+                'err:f_date_add:second parameter, "{}", is not a valid date in the proper format YYYY-MM-DD'
+                .format(base_date_str))
             self.stack.append(err_str)
             return self.stack
 
@@ -428,25 +428,108 @@ class Tel:
         try:
             num_days = int(num_days_str)
         except ValueError:
-            err_str = 'err:f_date_add: first parameter, "{}", must be an integer (number of days)'.format(num_days_str)
+            err_str = (
+                'err:f_date_add: first parameter, "{}", must be an integer (number of days)'
+                .format(num_days_str))
             self.stack.append(err_str)
             return self.stack
 
-        new_date = base_date+timedelta(days=num_days)
-        new_date_str =new_date.strftime('%Y-%m-%d')
+        new_date = base_date + timedelta(days=num_days)
+        new_date_str = new_date.strftime('%Y-%m-%d')
         self.stack.append(new_date_str)
         return self.stack
 
-
-
     #  FDATEDIFF
-    # :example: [CDate1 | CDate2 | FDATEDIFF]
+    def f_datediff(self):
+        """
+        Returns an integer indicating the number of days difference between two dates.
+        if date1 is prior to date2, returned integer will be positive
+        if date1 is after than date2, returned integer will be negative
+        :param: stack: stack[-2]=date1, stack[-1]=date2
+        :return:  result or error message placed back on the stack
+        :tel example: [C2017-01-01|C2018-01-01|FDATEDIFF]
+        """
+        if len(self.stack) < 2:
+            self.stack.append("err:f_datediff:too few parameters (need 2)")
+            return self.stack
+
+        from datetime import datetime
+        d2_str = str(self.stack.pop())
+        d1_str = str(self.stack.pop())
+        try:
+            d2 = datetime.strptime(d2_str, '%Y-%m-%d')
+            d1 = datetime.strptime(d1_str, '%Y-%m-%d')
+        except ValueError:
+            err_str = (
+                'err:f_date_diff: both parameters, "{}", "{}", must be valid dates in the format YYYY-MM-DD'
+                .format(d1_str, d2_str))
+            self.stack.append(err_str)
+            return self.stack
+
+        days_difference = (d2 - d1).days
+        self.stack.append(days_difference)
+        return self.stack
 
     #  FDOW
-    # :example: [CDate | FDOW]
 
-    #  FDATEFORMAT
-    # :example: [C<date>|C <format>|FDATEFORMAT]
+    def f_dow(self):
+        """
+        Returns a 3 char string indicating the number of days difference between two dates.
+        if date1 is prior to date2, returned integer will be positive
+        if date1 is after than date2, returned integer will be negative
+        :param: stack[-1]=date
+        :return:  result or error message placed back on the stack
+        :tel example: [C2017-01-01|FDOW]
+        """
+        if len(self.stack) < 1:
+            self.stack.append("err:f_dow:too few parameters (need 1)")
+            return self.stack
+
+        from datetime import datetime
+        dt_str = str(self.stack.pop())
+        try:
+            dt = datetime.strptime(dt_str, '%Y-%m-%d')
+        except ValueError:
+            err_str = (
+                'err:f_dow: parameter "{}" is not a valid date in format YYYY-MM-DD'
+                .format(dt_str))
+            self.stack.append(err_str)
+            return self.stack
+
+        dow = dt.strftime("%a")
+        self.stack.append(dow)
+        return self.stack
+
+
+    def f_dateformat(self):
+        """
+        Returns a string date representation
+        :param: stack[-1]=format, stack[-2]=date
+        :return:  result or error message placed back on the stack. The format string is not tested
+        :tel example: [C2018-07-02|C%A %B %d, %Y|FDATEFORMAT] produces Tuesday January 02, 2018
+        """
+        if len(self.stack) < 2:
+            self.stack.append("err:f_dateformat:too few parameters (need 2)")
+            return self.stack
+
+        from datetime import datetime
+
+        format_str = self.stack.pop()
+        dt_str = self.stack.pop()
+
+        try:
+            dt = datetime.strptime(dt_str, '%Y-%m-%d')
+        except ValueError:
+            err_str = (
+                'err:f_dateformat: parameter "{}" is not a valid date in format YYYY-MM-DD'
+                .format(dt_str))
+            self.stack.append(err_str)
+            return self.stack
+
+        date_formatted = dt.strftime(format_str)
+        self.stack.append(date_formatted)
+        return self.stack
+
 
     # Patient Functions -- require a current session/patient
     #  FPATSET
