@@ -9,8 +9,9 @@ class Tel:
      3. returns the stack
     """
 
-    def __init__(self, stack):
+    def __init__(self, stack, user_id = 0):
         self.stack = stack
+        self.user_id = user_id
 
     @staticmethod
     def bool_eval(val_to_test):
@@ -533,6 +534,11 @@ class Tel:
 
     # Patient Functions -- require a current session/patient
     #  FPATSET
+    def f_patset(self,user_id):
+
+        self.stack.append(True)
+        return self.stack
+
     #  FPATGET
     #  FPATXSET
     #  FPATXSETR
@@ -575,5 +581,5 @@ class Tel:
     #  FDO
     #  FHOME
 
-    # SpineChart-Specific Funtions
+    # SpineChart-Specific Functions
     #

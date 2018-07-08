@@ -257,6 +257,8 @@ class TelTest(unittest.TestCase):
         self.assertEqual(Tel(['2018-07-03', '%m/%d/%Y']).f_dateformat().pop(), '07/03/2018')
         self.assertEqual(Tel(['2018-07-03', '%a, %b %d, %Y']).f_dateformat().pop(), 'Tue, Jul 03, 2018')
 
+    def test_f_patset(self):
+        self.assertTrue(Tel(['']).f_patset(15).pop())
 
 if __name__ == "__main__":
     unittest.main()
