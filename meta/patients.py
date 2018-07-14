@@ -1,0 +1,78 @@
+from sqlalchemy import MetaData
+metadata = MetaData()
+
+from sqlalchemy import Table, Column, Integer, Numeric, String, ForeignKey
+
+patients = Table('patients', metadata,
+    Column('id', Integer(), primary_key=True),
+    Column('user_id', Integer(), index=True),
+    Column('last_name', String(64))
+)
+
+
+'''
+CREATE TABLE `patients` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) NOT NULL,
+  `title` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `first_name` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `middle_name` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `last_name` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `suffix` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `preferred_name` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `dob` date DEFAULT NULL,
+  `gender` char(1) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `f_site_id` bigint(20) DEFAULT '1230',
+  `medical_record_number` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `primary_email` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `email_validation` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `home_telephone` varchar(16) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `work_telephone` varchar(16) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `mobile_telephone` varchar(16) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `home_address_line1` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `home_address_line2` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `city` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `state_province` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `country` varchar(12) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `postal_code` varchar(24) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `physician_id` bigint(20) DEFAULT NULL,
+  `physician_name` varchar(60) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `treat_date` date DEFAULT NULL,
+  `appt` datetime DEFAULT NULL,
+  `protocol` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `procedure` varchar(60) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `step` varchar(60) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `stage` varchar(60) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `next_survey` varchar(32) COLLATE utf8_unicode_ci DEFAULT '2',
+  `override` tinyint(1) DEFAULT '0',
+  `surginet_procedure` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `surginet_body_part` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `surginet_date` date DEFAULT NULL,
+  `surginet_status` enum('COMPLETED','SCHEDULED','LOCKED') COLLATE utf8_unicode_ci DEFAULT NULL,
+  `surginet_physician` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `surginet_npi` int(11) DEFAULT NULL,
+  `user1` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `user1_note` varchar(800) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `user2` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `user2_note` varchar(800) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `user3` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `user3_note` varchar(800) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `no_follow` tinyint(1) DEFAULT NULL,
+  `no_follow_reason` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `fu_proc` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `fu_proc_date` date DEFAULT NULL,
+  `fu_body_part` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `fu_side` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `fu_phys_npi` bigint(20) DEFAULT NULL,
+  `fu_physician` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `last_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_id` (`user_id`) USING BTREE,
+  UNIQUE KEY `mrn` (`medical_record_number`),
+  KEY `last_name` (`last_name`),
+  KEY `surginet_date` (`surginet_date`),
+  KEY `surginet_status` (`surginet_status`),
+  KEY `surginet_npi` (`surginet_npi`),
+  CONSTRAINT `f_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=37893 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+'''

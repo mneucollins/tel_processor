@@ -1,11 +1,15 @@
-from tel import Tel
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
+import pymysql
+import config.database as database
 
-def scratchpad():
-    stack = ["1","1"]
-    tel_obj = Tel(stack)
-    print (tel_obj.p_equal_to())
+# connection = pymysql.connect(host='localhost', user='beta3_user', password = 'ym0|{NvH|tow:c<oft#}{', db = 'psp_beta3')
+connection = pymysql.connect(**database.pop_user_cx)
 
-
-if __name__ == '__main__':
-    scratchpad()
+with connection.cursor() as cursor:
+    sql = "SELECT * FROM `patients` WHERE `id`=%s"
+    cursor.execute(sql, (1,))
+    result = cursor.fetchone()
+    print(result)
+connection.close()

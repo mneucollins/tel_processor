@@ -1,3 +1,9 @@
+from datetime import date
+from datetime import datetime
+from datetime import timedelta
+import pymysql
+import config.database as database
+
 class Tel:
     """
     A tel object consists of a stack list of values and an operation on the stack
@@ -8,6 +14,9 @@ class Tel:
      2. pushes the result of the operation back on the stack, and
      3. returns the stack
     """
+
+    global _cnx
+    _cnx = pymysql.connect(**database.pop_user_cx)
 
     def __init__(self, stack, user_id = 0):
         self.stack = stack
@@ -368,7 +377,6 @@ class Tel:
         :return:  stack (list) with last element being todays date
         :example: [FTODAY]
         """
-        from datetime import date
         today = str(date.today())
         self.stack.append(today)
         return self.stack
@@ -380,7 +388,6 @@ class Tel:
         :return:  stack (list) with last element being current datetime (no microsecond)
         :example: [FTIME]
         """
-        from datetime import datetime
         time = datetime.now().replace(microsecond=0).isoformat(' ')
         self.stack.append(time)
         return self.stack
@@ -392,7 +399,6 @@ class Tel:
         :return:  stack (list) with last element being current system timestamp
         :example: [FTIME]
         """
-        from datetime import datetime
         ts = datetime.now().timestamp()
         self.stack.append(ts)
         return self.stack
@@ -408,8 +414,6 @@ class Tel:
         :return:  result or error message placed back on the stack
         :tel example: [C10|C2018-10-11|FDATEADD]
         """
-        from datetime import datetime
-        from datetime import timedelta
 
         if len(self.stack) < 2:
             self.stack.append("err:f_dateadd:too few parameters (need 2)")
@@ -454,7 +458,6 @@ class Tel:
             self.stack.append("err:f_datediff:too few parameters (need 2)")
             return self.stack
 
-        from datetime import datetime
         d2_str = str(self.stack.pop())
         d1_str = str(self.stack.pop())
         try:
@@ -486,7 +489,6 @@ class Tel:
             self.stack.append("err:f_dow:too few parameters (need 1)")
             return self.stack
 
-        from datetime import datetime
         dt_str = str(self.stack.pop())
         try:
             dt = datetime.strptime(dt_str, '%Y-%m-%d')
@@ -513,8 +515,6 @@ class Tel:
             self.stack.append("err:f_dateformat:too few parameters (need 2)")
             return self.stack
 
-        from datetime import datetime
-
         format_str = self.stack.pop()
         dt_str = self.stack.pop()
 
@@ -533,8 +533,29 @@ class Tel:
 
 
     # Patient Functions -- require a current session/patient
-    #  FPATSET
+
     def f_patset(self,user_id):
+        #
+        """
+        stores a <value> in the <fieldname> of the current patient record.
+        :param: stack[-1]=value, stack[-2] = fieldname
+        :return:  boolean true if successful, false if otherwise (no patient record found)
+        :tel example: [C<fieldname>|C<value>|FPatSet]
+        """
+
+        with _cnx.cursor() as cursor:
+            sql = "SELECT COUNT(*) FROM `patients` WHERE `user_id`=%s"
+            cursor.execute(sql, (user_id,))
+            result = cursor.fetchone()
+            if result[0] != 1:
+                # err:f_patset: user not unique or not found!
+                self.stack.append(False)
+            else:
+                # update
+                value = self.stack.pop()
+                field = self.stack.pop()
+                sql = "UPDATE `patients` SET %s=%s WHERE `user_id`=%s"
+                cursor.execute(sql, (field, value, user_id))
 
         self.stack.append(True)
         return self.stack

@@ -23,6 +23,11 @@ class ProcessorTest(unittest.TestCase):
 
 
 class TelTest(unittest.TestCase):
+    import pymysql
+    import config.database as database
+    global _cnx
+    _cnx = pymysql.connect(**database.pop_user_cx)
+
     def test_bool_eval(self):
         self.assertTrue(Tel([]).bool_eval(True))
         self.assertTrue(Tel([]).bool_eval("True"))
@@ -258,7 +263,23 @@ class TelTest(unittest.TestCase):
         self.assertEqual(Tel(['2018-07-03', '%a, %b %d, %Y']).f_dateformat().pop(), 'Tue, Jul 03, 2018')
 
     def test_f_patset(self):
-        self.assertTrue(Tel(['']).f_patset(15).pop())
+        # setup
+        with _cnx.cursor() as cursor:
+            # setup
+            cursor.execute('INSERT INTO `users` (`id`, `group_id`, `username`) VALUES(-10001, 0, "tester")')
+            cursor.execute('INSERT INTO `patients` (`user_id`,`user1`) VALUES (-10001, "testing")')
+
+        self.assertTrue(Tel(['']).f_patset(-10001).pop())
+
+        with _cnx.cursor() as cursor:
+            # grab the value and cleanup the test records
+            cursor.execute('SELECT `user1` FROM `patients` WHERE user_id = -10001')
+            result = cursor.fetchone()
+            cursor.execute('DELETE FROM `users` WHERE `id` = -10001')
+            cursor.execute('DELETE FROM `patients` WHERE `user_id`= -10001')
+
+        self.assertEqual(result[0], 'testing')
+
 
 if __name__ == "__main__":
     unittest.main()
