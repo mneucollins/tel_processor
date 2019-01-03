@@ -1,7 +1,15 @@
 import unittest
+# import pymysql
+import mysql.connector
+from mysql.connector import errorcode
 
+# from pymysql.connections import Connection
+
+import config.database as database
 import processor
 from tel import Tel
+
+_cnx = mysql.connector.connect(**database.pop_user)
 
 
 class ProcessorTest(unittest.TestCase):
@@ -23,10 +31,6 @@ class ProcessorTest(unittest.TestCase):
 
 
 class TelTest(unittest.TestCase):
-    import pymysql
-    import config.database as database
-    global _cnx
-    _cnx = pymysql.connect(**database.pop_user_cx)
 
     def test_bool_eval(self):
         self.assertTrue(Tel([]).bool_eval(True))
@@ -37,6 +41,9 @@ class TelTest(unittest.TestCase):
         self.assertFalse(Tel([]).bool_eval("False"))
         self.assertFalse(Tel([]).bool_eval("0"))
         self.assertFalse(Tel([]).bool_eval(0))
+
+    # def test_matches(self):
+    #     self.assertEqual(Tel[].matches('no_tbl', 'no_fld', 'no_val').pop, "err:matches:")
 
     def test_p_equal_to(self):
         self.assertEqual(Tel(["1"]).p_equal_to().pop(), "err:p_equal_to:too few parameters")
@@ -114,6 +121,27 @@ class TelTest(unittest.TestCase):
         self.assertFalse(Tel([False, False]).p_logical_or().pop())
         self.assertFalse(Tel([False, 0]).p_logical_or().pop())
         self.assertFalse(Tel([False, "0"]).p_logical_or().pop())
+
+    def test_p_logical_not(self):
+        # not enough parameters to evaluate
+        self.assertEqual(Tel([]).p_logical_not().pop(), "err:p_logical_not:too few parameters")
+
+        # booleans
+        self.assertTrue(Tel([False]).p_logical_not().pop())
+        self.assertFalse(Tel([True]).p_logical_not().pop())
+
+        # interpreting strings as boolean
+        self.assertTrue(Tel(["False",]).p_logical_not().pop())
+        self.assertFalse(Tel(["True",]).p_logical_not().pop())
+
+        # interpreting 0 and 1 as boolean
+        self.assertTrue(Tel([0]).p_logical_not().pop())
+        self.assertFalse(Tel([1]).p_logical_not().pop())
+
+        # handling other non-boolean conditions
+        self.assertEqual(Tel([1234]).p_logical_not().pop(),"err:bool_eval:cannot convert '1234' to boolean")
+        self.assertEqual(Tel(["Random Text"]).p_logical_not().pop(), "err:bool_eval:cannot convert 'Random Text' to boolean")
+        
 
     def test_a_multiply(self):
         self.assertEqual(Tel([1]).a_multiply().pop(), "err:a_multiply:too few parameters")
@@ -262,24 +290,132 @@ class TelTest(unittest.TestCase):
         self.assertEqual(Tel(['2018-07-03', '%m/%d/%Y']).f_dateformat().pop(), '07/03/2018')
         self.assertEqual(Tel(['2018-07-03', '%a, %b %d, %Y']).f_dateformat().pop(), 'Tue, Jul 03, 2018')
 
+    def pat_setup(self):
+        # common setup for functions patset, patget, patxget, and patxset
+        global _cnx
+        cursor = _cnx.cursor()
+        try:
+            cursor.execute("INSERT INTO `users` (`id`, `group_id`, `username`) VALUES(-10001, 0, 'tester')")
+            cursor.execute("INSERT INTO `patients` (id, `user_id`,`user1`) VALUES (-10000, -10001, 'testing')")
+            cursor.execute("INSERT INTO `patients_extended` (`f_patientsID`,`field_name`, `field_value`) "
+                           "VALUES (-10000, 'testfieldname', 'testfieldvalue')")
+            _cnx.commit()
+        except mysql.connector.Error as err:
+            self.db_error(err)
+        finally:
+            cursor.close()
+
+    def pat_teardown(self):
+        # common teardown for functions patset, patget, patxget, and patxset
+        global _cnx
+        cursor = _cnx.cursor()
+
+        try:
+            cursor.execute("DELETE FROM users WHERE users.id = -10001")
+            cursor.execute("DELETE FROM patients WHERE patients.id = -10000")
+            cursor.execute("DELETE FROM patients_extended WHERE patients_extended.f_patientsID = -10000")
+            _cnx.commit()
+        except mysql.connector.Error as err:
+            self.db_error(err)
+        finally:
+            cursor.close() 
+
+
     def test_f_patset(self):
+        # run teardown to remove artifacts from any previous failed test
+        self.pat_teardown()
         # setup
-        with _cnx.cursor() as cursor:
-            # setup
-            cursor.execute('INSERT INTO `users` (`id`, `group_id`, `username`) VALUES(-10001, 0, "tester")')
-            cursor.execute('INSERT INTO `patients` (`user_id`,`user1`) VALUES (-10001, "testing")')
-
-        self.assertTrue(Tel(['']).f_patset(-10001).pop())
-
-        with _cnx.cursor() as cursor:
-            # grab the value and cleanup the test records
+        self.pat_setup()
+        # test
+        self.assertEqual(Tel([]).f_patset(-10001).pop(), "err:f_patset:too few parameters (need 2)")
+        self.assertEqual(Tel(['user1']).f_patset(-10001).pop(), "err:f_patset:too few parameters (need 2)")
+        self.assertEqual(Tel(['fiddlesticks', 'dum_de_dum']).f_patset(-10001).pop(),
+                         'err:f_patset: fieldname "fiddlesticks" is not in the patients table')
+        self.assertEqual(Tel(['fiddlesticks', 'dum_de_dum']).f_patset(-10002).pop(),
+                         'err:f_patset: user "-10002" was not found in patients table')
+        
+        #successful update returns true
+        self.assertTrue(Tel(['user1', 'tested']).f_patset(-10001).pop())
+        # test that the user1 value has actually been updated
+        cursor = _cnx.cursor()
+        try:
             cursor.execute('SELECT `user1` FROM `patients` WHERE user_id = -10001')
             result = cursor.fetchone()
-            cursor.execute('DELETE FROM `users` WHERE `id` = -10001')
-            cursor.execute('DELETE FROM `patients` WHERE `user_id`= -10001')
+            self.assertEqual(result[0], 'tested')
+        except mysql.connector.Error as err:
+            self.db_error(err)
+        finally:
+            cursor.close()
 
-        self.assertEqual(result[0], 'testing')
+        self.pat_teardown()
 
+    def test_f_patget(self):
+        # run teardown to remove artifacts from any previous failed test
+        self.pat_teardown()
+        # setup
+        self.pat_setup()
+
+        # test
+        self.assertEqual(Tel([]).f_patget(-10001).pop(), "err:f_patget:missing fieldname parameter")
+        self.assertEqual(Tel(['fiddlesticks']).f_patget(-10001).pop(),
+                         'err:f_patget: fieldname "fiddlesticks" is not in the patients table')
+        self.assertEqual(Tel(['user1']).f_patget(-10002).pop(),
+                         'err:f_patget: user "-10002" was not found in patients table')
+        self.assertEqual(Tel(['user1']).f_patget(-10001).pop(), 'testing')
+
+        # cleanup
+        self.pat_teardown()
+    
+    
+    @staticmethod
+    def db_error(err):
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Something is wrong with your user name or password")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database does not exist")
+        else:
+            print(err)
+
+
+'''
+    def test_f_patxget(self):
+        # run teardown to remove artifacts from any previous failed test
+        self.pat_teardown()
+
+        # setup
+        self.pat_setup()
+
+        # test
+        self.assertEqual(Tel(['']).f_patxget(-10001).pop(), "err:f_patxget:too few parameters (need 1)")
+        self.assertFalse(Tel(['testfieldname']).f_patxget(-10002).pop())  # non-existent patient
+        self.assertFalse(Tel(['badfieldname']).f_patxget(-10001).pop(), False)
+        self.assertEqual(Tel(['testfieldname']).f_patxget(-10001).pop(), 'testfieldvalue')
+
+        # teardown
+    #    self.pat_teardown()
+
+    def test_f_patxset(self):
+        # run teardown to remove artifacts from any previous failed test
+        self.pat_teardown()
+
+        # setup
+        self.pat_setup()
+        self.assertEqual(Tel(['']).f_patxget(-10001).pop(), "err:f_patxset:too few parameters (need 2)")
+        self.assertEqual(Tel(['testfieldname']).f_patxset(-10001).pop(), "err:f_patxset:too few parameters (need 2)")
+
+        # test existing value: run the function then test the value using f_patxget
+        # first make sure there is no current patx fieldname 'newfieldname
+        self.assertFalse(Tel(['newfieldname']).fpatxget(-10001).pop())
+        Tel(['testfieldname', 'updatedvalue']).f_patxset(-10001).pop()
+        self.assertEqual(Tel(['testfieldname']).f_patxget(-10001).pop(), 'updatedvalue')
+
+        # existing value run the function then test the value using f_patxget
+
+        # test
+
+        # teardown
+        self.pat_teardown()
+'''
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,8 +1,14 @@
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
-import pymysql
+# import pymysql
+import mysql.connector
+from mysql.connector import errorcode
+
 import config.database as database
+
+# _cnx = mysql.connector.connect(**database.pop_user)
+
 
 class Tel:
     """
@@ -15,12 +21,22 @@ class Tel:
      3. returns the stack
     """
 
-    global _cnx
-    _cnx = pymysql.connect(**database.pop_user_cx)
-
-    def __init__(self, stack, user_id = 0):
+    def __init__(self, stack, user_id=0):
         self.stack = stack
         self.user_id = user_id
+
+        try:
+            self.cnx = mysql.connector.connect(**database.pop_user)
+        except:
+            print ("unable to connect to SQL server")
+
+        self.cursor = self.cnx.cursor()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exception_type, exception_value, traceback):
+        self.cnx.close()
 
     @staticmethod
     def bool_eval(val_to_test):
@@ -34,8 +50,7 @@ class Tel:
         elif val_to_test is False or str(val_to_test).upper() == "FALSE" or val_to_test == 0 or val_to_test == '0':
             val_to_return = False
         else:
-            val_to_return = "err:bool_eval:cannot convert " + val_to_test + " to boolean"
-
+            val_to_return = ("err:bool_eval:cannot convert '{}' to boolean".format(val_to_test))
         return val_to_return
 
     @staticmethod
@@ -46,8 +61,32 @@ class Tel:
         except ValueError:
             return False
 
-    # Logical Operators
 
+    def matches (self, table, field, testval):
+        # Does table exist
+        sql = "show tables like %s"
+        find_table = self.cursor.execute(sql, (table,))
+        if find_table is None:
+            err_str = ('err: matches: tablename "{}" does not exist in this database'.format(table))
+            return err_str        
+        
+        # Does field exist in this table
+        sql = "SHOW COLUMNS FROM %s LIKE %s"
+        find_col = self.cursor.execute(sql, (table, field))
+        if find_col is None:
+            err_str = ('err: matches: fieldname "{}" does not exist in tablename {}'.format(field,table))
+            return err_str        
+
+        # how many rows match testval        
+        sql = "SELECT COUNT(*) FROM %s WHERE %s=%s"
+        self.cursor.execute(sql, (table, field, testval))
+        result = self.cursor.fetchone()
+        return result[0]
+
+
+    # -----------------
+    # Logical Operators
+    # -----------------
     def p_equal_to(self):
         """
         Pops the last two items off the stack, compares for equality, pushes result of comparison onto stack
@@ -146,7 +185,32 @@ class Tel:
                 self.stack.append(False)
         return self.stack
 
+    def p_logical_not(self):
+        """
+        Pops the last item off the stack. 
+        Pushes onto the stack:
+            false, if the value can be evaluated as true
+            true if the value is false, not boolean, or empty
+        """
+        if len(self.stack) < 1:
+            self.stack.append("err:p_logical_not:too few parameters")
+            return self.stack
+        else:
+            a = self.stack.pop()
+            bool_eval = self.bool_eval(a)
+            if bool_eval is True:
+                self.stack.append(False)
+            elif bool_eval is False:
+                self.stack.append(True)
+            else:
+                self.stack.append (bool_eval)
+        return self.stack
+
+
+    # ----------------------
     # Mathematical Operators
+    # ----------------------
+
     def a_multiply(self):
         """
         Pops the last two items off the stack and multiplies them
@@ -238,7 +302,10 @@ class Tel:
         self.stack.append(float(a) / float(b))
         return self.stack
 
+    # ----------------------
     # String Operators
+    # ----------------------
+
     def f_cat(self):
         """
         Pops the last two items off the stack, converts to strings and concatenates them.
@@ -369,7 +436,10 @@ class Tel:
         self.stack.append(new_str)
         return self.stack
 
+    # ----------------------
     # Date Functions
+    # ----------------------
+
     def f_today(self):
         """
         :param: none
@@ -406,7 +476,6 @@ class Tel:
     #  FELAPSED
     #  holding off on FELAPSED for now
 
-    #  FDATEADD
     def f_dateadd(self):
         """
         Returns the date that is <number of days> from <date>. Negative days value subtracts
@@ -423,9 +492,8 @@ class Tel:
         try:
             base_date = datetime.strptime(base_date_str, '%Y-%m-%d')
         except ValueError:
-            err_str = (
-                'err:f_date_add:second parameter, "{}", is not a valid date in the proper format YYYY-MM-DD'
-                .format(base_date_str))
+            err_str = ('err:f_date_add:second parameter, "{}", is not a valid date in the proper format YYYY-MM-DD'
+                       .format(base_date_str))
             self.stack.append(err_str)
             return self.stack
 
@@ -433,9 +501,8 @@ class Tel:
         try:
             num_days = int(num_days_str)
         except ValueError:
-            err_str = (
-                'err:f_date_add: first parameter, "{}", must be an integer (number of days)'
-                .format(num_days_str))
+            err_str = ('err:f_date_add: first parameter, "{}", must be an integer (number of days)'
+                       .format(num_days_str))
             self.stack.append(err_str)
             return self.stack
 
@@ -444,7 +511,7 @@ class Tel:
         self.stack.append(new_date_str)
         return self.stack
 
-    #  FDATEDIFF
+
     def f_datediff(self):
         """
         Returns an integer indicating the number of days difference between two dates.
@@ -464,9 +531,8 @@ class Tel:
             d2 = datetime.strptime(d2_str, '%Y-%m-%d')
             d1 = datetime.strptime(d1_str, '%Y-%m-%d')
         except ValueError:
-            err_str = (
-                'err:f_date_diff: both parameters, "{}", "{}", must be valid dates in the format YYYY-MM-DD'
-                .format(d1_str, d2_str))
+            err_str = ('err:f_date_diff: both parameters, "{}", "{}", must be valid dates in the format YYYY-MM-DD'
+                       .format(d1_str, d2_str))
             self.stack.append(err_str)
             return self.stack
 
@@ -474,7 +540,6 @@ class Tel:
         self.stack.append(days_difference)
         return self.stack
 
-    #  FDOW
 
     def f_dow(self):
         """
@@ -493,9 +558,8 @@ class Tel:
         try:
             dt = datetime.strptime(dt_str, '%Y-%m-%d')
         except ValueError:
-            err_str = (
-                'err:f_dow: parameter "{}" is not a valid date in format YYYY-MM-DD'
-                .format(dt_str))
+            err_str = ('err:f_dow: parameter "{}" is not a valid date in format YYYY-MM-DD'
+                       .format(dt_str))
             self.stack.append(err_str)
             return self.stack
 
@@ -521,9 +585,8 @@ class Tel:
         try:
             dt = datetime.strptime(dt_str, '%Y-%m-%d')
         except ValueError:
-            err_str = (
-                'err:f_dateformat: parameter "{}" is not a valid date in format YYYY-MM-DD'
-                .format(dt_str))
+            err_str = ('err:f_dateformat: parameter "{}" is not a valid date in format YYYY-MM-DD'
+                       .format(dt_str))
             self.stack.append(err_str)
             return self.stack
 
@@ -531,39 +594,160 @@ class Tel:
         self.stack.append(date_formatted)
         return self.stack
 
+    # ----------------------
+    # Patient Functions
+    # -- require a current session/patient
+    # ----------------------
+    
+    @staticmethod
+    def patient_column_exists(self, fieldname):
+        """
+        local test for the existance of fieldname in patients table,
+        :param: fieldname to test
+        :return: true if fieldname exists in the patient table, false if it does not
+        :notes: 
+            this is used by f_patset and f_patget methods. Follows the procedure:
+            --execute an query on the patients table that will return no value
+            --fetch the empty recordset or else next query will generate an 'unread result found' error message
+            --doing this creates a readonly list if column names that can be used to test fielname existance
+        """
+        self.cursor.execute("select * from patients where id = 0")
+        self.cursor.fetchall()
 
-    # Patient Functions -- require a current session/patient
+        if fieldname not in self.cursor.column_names:
+            return False
+        else:
+            return True
 
-    def f_patset(self,user_id):
-        #
+    @staticmethod
+    def patient_exists(self, user_id):
+        """
+        local test for the existance of patient record
+        :param: user_id to find
+        :return: true if user_id exists in the patient table, false if it does not
+        """
+        sql = "SELECT COUNT(*) FROM `patients` WHERE `user_id`=%s"
+        self.cursor.execute(sql, (user_id,))
+        result = self.cursor.fetchone()
+        if result[0] != 1:
+            return False
+        else:
+            return True
+
+
+    def f_patset(self, user_id):
         """
         stores a <value> in the <fieldname> of the current patient record.
         :param: stack[-1]=value, stack[-2] = fieldname
-        :return:  boolean true if successful, false if otherwise (no patient record found)
+        :return:  boolean true if successful, err if otherwise (no patient record found)
         :tel example: [C<fieldname>|C<value>|FPatSet]
         """
 
-        with _cnx.cursor() as cursor:
-            sql = "SELECT COUNT(*) FROM `patients` WHERE `user_id`=%s"
-            cursor.execute(sql, (user_id,))
-            result = cursor.fetchone()
-            if result[0] != 1:
-                # err:f_patset: user not unique or not found!
-                self.stack.append(False)
-            else:
-                # update
-                value = self.stack.pop()
-                field = self.stack.pop()
-                sql = "UPDATE `patients` SET %s=%s WHERE `user_id`=%s"
-                cursor.execute(sql, (field, value, user_id))
+        if len(self.stack) < 2:
+            self.stack.append("err:f_patset:too few parameters (need 2)")
+            return self.stack
 
-        self.stack.append(True)
+        # look for an existing patient record
+        if not self.patient_exists(self,user_id):
+            err_str = ('err:f_patset: user "{}" was not found in patients table'.format(user_id))
+            self.stack.append(err_str)
+            return self.stack
+        else:
+            # update the found record
+            value = self.stack.pop()
+            fieldname = self.stack.pop()
+
+            # does fieldname exist?
+            if not self.patient_column_exists(self,fieldname):
+                err_str = ('err:f_patset: fieldname "{}" is not in the patients table'.format(fieldname))
+                self.stack.append(err_str)
+                return self.stack
+            else:
+                # fieldname exists in patient table, update it
+                # note the sql statement with %s parameters is created with the .format method in order to substitutie 
+                # the fieldname in the query statement. Fieldnames cannot be substituted in the execute statement
+                # using %s parameter substitution
+                sql = ('UPDATE patients SET {} = %s WHERE user_id = %s'.format(fieldname))
+                self.cursor.execute(sql, (value, user_id))
+                self.cnx.commit()
+
+                # affected_rows does not work as expected here, but the cursor rowcount property returns the proper value
+                num_rows = self.cursor.rowcount
+                if num_rows == 1:
+                    self.stack.append(True)
+                else:
+                    self.stack.append(False)
         return self.stack
 
-    #  FPATGET
-    #  FPATXSET
-    #  FPATXSETR
-    #  FPATXGET
+
+    def f_patget(self, user_id):
+        """
+        user_id must be passed in as parameter
+        retrieves the value in the <fieldname> of the current patient record.
+        :param: stack[-1] = fieldname
+        :return:  value in fieldname if successful, err if otherwise
+            (no patient record found, no fieldname found)
+        :tel example: [C<fieldname>|FPATGET]
+        """
+        # test for correct number of parameters
+        if len(self.stack) < 1:
+            self.stack.append("err:f_patget:missing fieldname parameter")
+            return self.stack
+
+        # look for an existing patient record
+        if not self.patient_exists(self,user_id):
+            err_str = ('err:f_patget: user "{}" was not found in patients table'.format(user_id))
+            self.stack.append(err_str)
+            return self.stack
+        
+        # does fieldname exist?
+        fieldname = self.stack.pop()
+        if not self.patient_column_exists(self,fieldname):
+            err_str = ('err:f_patget: fieldname "{}" is not in the patients table'.format(fieldname))
+            self.stack.append(err_str)
+            return self.stack
+        else:
+            # fieldname exists in patient table, return its value
+            sql = ('SELECT {} FROM patients WHERE user_id = %s'.format(fieldname))
+            self.cursor.execute(sql, (user_id,))
+            result = self.cursor.fetchone()
+            self.stack.append(result[0])
+            return self.stack
+
+
+    def f_patxset(self, user_id):
+        """
+        stores or updates <fieldname><value>in the patients_extended table for the current patient.
+        :param: stack[-2] = fieldname, stack[-1] = value
+        :return:  true if successful, err if otherwise
+            (no patient record found, no fieldname found)
+        :tel example: [C<fieldname>|C<value>FPATXSET]
+        """
+        pass
+        # parameters?
+        # if len(self.stack) < 2:
+        #     self.stack.append("err:f_patxset:too few parameters (need 2)")
+        #     return self.stack
+
+        # value = self.stack.pop()
+        # fieldname = self.stack.pop()
+        
+        # sql = "SELECT COUNT(*) FROM `patients` WHERE `user_id`=%s"
+
+
+
+    # FPATXSETR
+
+    # FPATXGET
+    # def f_patxget(self, user_id):
+        """
+        stores or updates <fieldname><value>in the patients_extended table for the current patient.
+        :param: stack[-2] = fieldname, stack[-1] = value
+        :return:  true if successful, err if otherwise
+            (no patient record found, no fieldname found)
+        :tel example: [C<fieldname>|C<value>FPATXSET]
+        """
+
     #  FCLONE
     #  FPCLONE
 
@@ -572,8 +756,8 @@ class Tel:
     #  FGETGLOBAL
     #  FRETANS
     #  FCLEARANS
-    #  FSETANS
-    #  FSTORE (synonym for FSTORE)
+    #  FSETANS (synonym for FSTORE)
+    #  FSTORE
     #  FLINK
     #  FIMAGE
     #  FWINDOW
@@ -604,3 +788,18 @@ class Tel:
 
     # SpineChart-Specific Functions
     #
+
+    
+
+    @staticmethod
+    def db_error(err):
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Something is wrong with your user name or password")
+            return None
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database does not exist")
+            return None       
+        else:
+            print(err)
+            return None
+
