@@ -14,7 +14,7 @@ _cnx = mysql.connector.connect(**database.pop_user)
 
 class ProcessorTest(unittest.TestCase):
     def test_is_simple_tel(self):
-        """ simple_tel should return true if text is a valid tel string only"""
+        """ simple_tel should return true if text is a valid tel string only """
         self.assertTrue(processor.is_simple_tel("[c1|c2|p=]"))
         self.assertTrue(processor.is_simple_tel("c1|c2|p="))
         self.assertTrue(processor.is_simple_tel("c1|c2|p=".upper()))
@@ -141,7 +141,7 @@ class TelTest(unittest.TestCase):
         # handling other non-boolean conditions
         self.assertEqual(Tel([1234]).p_logical_not().pop(),"err:bool_eval:cannot convert '1234' to boolean")
         self.assertEqual(Tel(["Random Text"]).p_logical_not().pop(), "err:bool_eval:cannot convert 'Random Text' to boolean")
-        
+
 
     def test_a_multiply(self):
         self.assertEqual(Tel([1]).a_multiply().pop(), "err:a_multiply:too few parameters")
@@ -318,7 +318,7 @@ class TelTest(unittest.TestCase):
         except mysql.connector.Error as err:
             self.db_error(err)
         finally:
-            cursor.close() 
+            cursor.close()
 
 
     def test_f_patset(self):
@@ -333,7 +333,7 @@ class TelTest(unittest.TestCase):
                          'err:f_patset: fieldname "fiddlesticks" is not in the patients table')
         self.assertEqual(Tel(['fiddlesticks', 'dum_de_dum']).f_patset(-10002).pop(),
                          'err:f_patset: user "-10002" was not found in patients table')
-        
+
         #successful update returns true
         self.assertTrue(Tel(['user1', 'tested']).f_patset(-10001).pop())
         # test that the user1 value has actually been updated
@@ -365,8 +365,8 @@ class TelTest(unittest.TestCase):
 
         # cleanup
         self.pat_teardown()
-    
-    
+
+
     @staticmethod
     def db_error(err):
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
